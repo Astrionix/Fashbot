@@ -63,9 +63,29 @@ def get_fashion_advice(user_message):
 @app.route('/')
 def home():
     try:
+        if not os.path.exists(template_dir):
+            raise Exception(f"Template directory not found at {template_dir}")
         return render_template('index.html')
     except Exception as e:
-        return f"Error rendering template: {str(e)}", 500
+        # Detailed debug info
+        cwd = os.getcwd()
+        try:
+            base_contents = os.listdir(base_dir)
+        except:
+            base_contents = "Could not list base dir"
+        try:
+            template_contents = os.listdir(template_dir)
+        except:
+            template_contents = "Could not list template dir"
+            
+        return (
+            f"<h1>Error: {str(e)}</h1>"
+            f"<p><strong>CWD:</strong> {cwd}</p>"
+            f"<p><strong>Base Dir:</strong> {base_dir}</p>"
+            f"<p><strong>Base Dir Contents:</strong> {base_contents}</p>"
+            f"<p><strong>Template Dir:</strong> {template_dir}</p>"
+            f"<p><strong>Template Dir Contents:</strong> {template_contents}</p>"
+        ), 500
 
 @app.route('/chat', methods=['POST'])
 def chat():
