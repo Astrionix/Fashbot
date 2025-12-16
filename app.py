@@ -1,8 +1,13 @@
+import os
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__)
+# Set absolute paths for templates and static files to ensure Vercel finds them
+base_dir = os.path.abspath(os.path.dirname(__file__))
+template_dir = os.path.join(base_dir, 'templates')
+static_dir = os.path.join(base_dir, 'static')
 
-import os
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
 from dotenv import load_dotenv
 from groq import Groq
 
@@ -10,15 +15,9 @@ load_dotenv()
 
 # Initialize Groq client
 # Ensure you have set GROQ_API_KEY in your .env file
-api_key = os.environ.get("GROQ_API_KEY")
-client = None
-if api_key:
-    try:
-        client = Groq(api_key=api_key)
-    except Exception as e:
-        print(f"Error initializing Groq client: {e}")
-else:
-    print("Warning: GROQ_API_KEY not set in environment variables.")
+client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY"),
+)
 
 def get_fashion_advice(user_message):
     """
@@ -37,11 +36,7 @@ def get_fashion_advice(user_message):
         return "A nice pair of fitted jeans, a white tee, and a denim jacket is a timeless casual look. Sneakers or loafers complete the vibe. 👖👟"
     
     # Fallback to Groq API for other queries
-    # Fallback to Groq API for other queries
     try:
-        if not client:
-            return "My connection to the fashion world is a bit spotty right now (API Key missing). Please check the server configuration! 🚫👗"
-
         chat_completion = client.chat.completions.create(
             messages=[
                 {
@@ -67,7 +62,10 @@ def get_fashion_advice(user_message):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return f"Error rendering template: {str(e)}", 500
 
 @app.route('/chat', methods=['POST'])
 def chat():
