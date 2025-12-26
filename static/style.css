@@ -1,17 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap');
 
 :root {
-    --bg-color: #000000;
-    --bg-gradient: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-    --chat-bg: rgba(20, 20, 20, 0.85);
-    --chat-border: 1px solid rgba(255, 255, 255, 0.08);
-    --primary-color: #d4af37;
-    /* Gold */
-    --secondary-color: #333333;
-    --text-color: #ffffff;
-    --user-msg-bg: #d4af37;
-    --bot-msg-bg: rgba(255, 255, 255, 0.08);
-    --input-bg: rgba(0, 0, 0, 0.4);
+    /* Earth & Neutral Luxury Palette */
+    --bg-color: #1a1a1a;
+    --bg-gradient: linear-gradient(135deg, #1f1f1f 0%, #4a433b 100%);
+    /* Black to Dark Taupe/Olive */
+    --chat-bg: rgba(75, 67, 57, 0.4);
+    /* Translucent Dark Taupe */
+    --chat-border: 1px solid rgba(240, 234, 214, 0.2);
+    /* Subtle Cream Border */
+    --primary-color: #f0ead6;
+    /* Eggshell/Cream Accent */
+    --secondary-color: #8d806f;
+    /* Taupe */
+    --text-color: #f0ead6;
+    /* Soft Cream Text */
+    --user-msg-bg: #8d806f;
+    /* Taupe for user */
+    --bot-msg-bg: rgba(0, 0, 0, 0.3);
+    /* Darker for bot */
+    --input-bg: rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -112,22 +120,22 @@ header p {
 .user-message {
     align-self: flex-end;
     background: var(--user-msg-bg);
-    color: white;
+    color: #fcfcfc;
     border-bottom-right-radius: 4px;
-    box-shadow: 0 4px 15px rgba(176, 106, 179, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .bot-message {
     align-self: flex-start;
     background: var(--bot-msg-bg);
-    color: #e0e0e0;
+    color: var(--text-color);
     border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(240, 234, 214, 0.1);
 }
 
 .input-area {
     padding: 20px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     gap: 10px;
     align-items: center;
@@ -137,10 +145,11 @@ header p {
 input[type="text"] {
     flex: 1;
     padding: 14px 20px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    /* Sharper */
+    border: 1px solid rgba(240, 234, 214, 0.1);
     background: var(--input-bg);
-    color: white;
+    color: var(--text-color);
     font-family: inherit;
     font-size: 1rem;
     outline: none;
@@ -149,28 +158,33 @@ input[type="text"] {
 
 input[type="text"]:focus {
     border-color: var(--primary-color);
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 15px rgba(176, 106, 179, 0.2);
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: none;
 }
 
 button {
-    background: var(--user-msg-bg);
-    border: none;
+    background: var(--secondary-color);
+    /* Taupe button */
+    border: 1px solid var(--primary-color);
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    color: white;
+    color: var(--primary-color);
+    /* Cream icon */
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 15px rgba(69, 104, 220, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 button:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(69, 104, 220, 0.5);
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    /* Invert on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
 button:active {
