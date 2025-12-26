@@ -1,23 +1,27 @@
-import os
 from flask import Flask, render_template, request, jsonify
-
-# Set absolute paths for templates and static files to ensure Vercel finds them
-base_dir = os.path.abspath(os.path.dirname(__file__))
-template_dir = os.path.join(base_dir, 'templates')
-static_dir = os.path.join(base_dir, 'static')
-
-app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-
+import os
 from dotenv import load_dotenv
 from groq import Groq
 
 load_dotenv()
 
+# Initialize Flask
+# template_folder='templates' looks for 'api/templates' since we are in 'api/'
+# static_folder='../static' tells Flask that static files are one level up (in root)
+# static_url_path='/static' ensures url_for('static', ...) generates '/static/...' URLs
+app = Flask(__name__, template_folder='templates', static_folder='../static', static_url_path='/static')
+
 # Initialize Groq client
 # Ensure you have set GROQ_API_KEY in your .env file
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-)
+api_key = os.environ.get("GROQ_API_KEY")
+client = None
+if api_key:
+    try:
+        client = Groq(api_key=api_key)
+    except Exception as e:
+        print(f"Error initializing Groq client: {e}")
+else:
+    print("Warning: GROQ_API_KEY not set in environment variables.")
 
 def get_fashion_advice(user_message):
     """
@@ -37,11 +41,13 @@ def get_fashion_advice(user_message):
     
     # Fallback to Groq API for other queries
     try:
+        if not client:
+            return "My connection to the fashion world is a bit spotty right now (API Key missing). Please check the server configuration! 🚫👗"
+
         chat_completion = client.chat.completions.create(
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are FashBot, a high-end, trendy fashion stylist AI. Your goal is to provide personalized, stylish, and practical outfit advice. Use emojis to make the conversation lively. Keep your answers concise (around 2-3 sentences) unless asked for details. Be encouraging and confident in your tone."
+                    "content": "You are VogueAI, a high-end, trendy fashion stylist AI. Your goal is to provide personalized, stylish, and practical outfit advice. Use emojis to make the conversation lively. Keep your answers concise (around 2-3 sentences) unless asked for details. Be encouraging and confident in your tone."
                 },
                 {
                     "role": "user",
@@ -63,29 +69,10 @@ def get_fashion_advice(user_message):
 @app.route('/')
 def home():
     try:
-        if not os.path.exists(template_dir):
-            raise Exception(f"Template directory not found at {template_dir}")
         return render_template('index.html')
     except Exception as e:
-        # Detailed debug info
-        cwd = os.getcwd()
-        try:
-            base_contents = os.listdir(base_dir)
-        except:
-            base_contents = "Could not list base dir"
-        try:
-            template_contents = os.listdir(template_dir)
-        except:
-            template_contents = "Could not list template dir"
-            
-        return (
-            f"<h1>Error: {str(e)}</h1>"
-            f"<p><strong>CWD:</strong> {cwd}</p>"
-            f"<p><strong>Base Dir:</strong> {base_dir}</p>"
-            f"<p><strong>Base Dir Contents:</strong> {base_contents}</p>"
-            f"<p><strong>Template Dir:</strong> {template_dir}</p>"
-            f"<p><strong>Template Dir Contents:</strong> {template_contents}</p>"
-        ), 500
+        # Fallback debug info if template still fails (shouldn't happen with correct structure)
+        return f"<h1>Error rendering template</h1><p>{str(e)}</p>", 500
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -96,5 +83,6 @@ def chat():
     bot_response = get_fashion_advice(user_message)
     return jsonify({'response': bot_response})
 
+# Vercel requires the app to be available as 'app' variable, which it is.
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
